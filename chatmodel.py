@@ -1,6 +1,7 @@
 import torch
 from llama import Llama
 from transformers import AutoTokenizer, AutoModelForCausalLM
+from transformers import BitsAndBytesConfig
 
 class ChatModel:
     def __init__(self, model):
@@ -16,14 +17,17 @@ class ChatModel:
             if self.tokenizer.pad_token is None:
                 self.tokenizer.pad_token = self.tokenizer.eos_token
 
-            if 'llama-2' in self.model.lower():
-                self.generator = Llama.build(
-                    ckpt_dir=f"./{self.model}/",
-                    tokenizer_path=f"./{self.model}/tokenizer.model",
-                    max_seq_len=25,
-                    max_batch_size=1,
-                )
-
+            #if 'llama-2' in self.model.lower():
+            #    self.generator = Llama.build(
+            #        ckpt_dir=f"/scratch/soyoung/hub/models--meta-llama--Llama-2-7b-chat-hf",
+            #        tokenizer_path=f"./{self.model}/tokenizer.model",
+            #        max_seq_len=25,
+            #        max_batch_size=1,
+            #    )
+            if '70' in self.model.lower():
+                quantization_config = BitsAndBytesConfig(load_in_4bit=True, llm_int4_enable_fp32_cpu_offload=True)
+                self.generator = AutoModelForCausalLM.from_pretrained(
+    "meta-llama/{}".format(self.model), device_map="auto", torch_dtype=torch.bfloat16, quantization_config=quantization_config)
             else:
                 self.generator = AutoModelForCausalLM.from_pretrained(
                     "meta-llama/{}".format(self.model),
@@ -87,7 +91,7 @@ class ChatModel:
             if "3" in self.model.lower():
                 return self.chat_llama3(system_prompt, user_prompt)
             else:
-                return self.chat_llama(system_prompt, user_prompt)
+                return self.chat_llama3(system_prompt, user_prompt)
         elif "vicuna" in self.model.lower():
             return self.chat_vicuna(system_prompt, user_prompt)
         elif "gemma" in self.model.lower():
@@ -157,8 +161,8 @@ class ChatModel:
 
     def chat_llama3(self, system_prompt, user_prompt):
         prompt = [
-                {"role":"sytem", "content": system_prompt},
-                {"role":"user", "content":user_prompt},
+                #{"role":"sytem", "content": system_prompt},
+                {"role":"user", "content": system_prompt + '\n'  + user_prompt},
                 ]
         input_ids = self.tokenizer.apply_chat_template(prompt, add_generation_prompt=True, return_tensors="pt").to(self.generator.device)
         terminators = [self.tokenizer.eos_token_id, self.tokenizer.convert_tokens_to_ids("<|eot_id|>")]

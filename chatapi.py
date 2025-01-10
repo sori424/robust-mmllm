@@ -1,12 +1,12 @@
 import time
 
-import vertexai
-from vertexai.preview.generative_models import GenerativeModel
-from vertexai.preview.language_models import ChatModel
+#import vertexai
+#from vertexai.preview.generative_models import GenerativeModel
+#from vertexai.preview.language_models import ChatModel
 
 # for ChatGPT
-import openai
-openai.api_key = ""
+#import openai
+#openai.api_key = "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"
 
 # for Claude
 #import anthropic
