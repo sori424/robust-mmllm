@@ -20,13 +20,13 @@ To tease apart these two situations, we additionally conduct experiments which u
 
 ### Requirements
 
-pip install -r requirements.txt
+`pip install -r requirements.txt`
 
 ### Run 
 
 [Note] or proprietary models (e.g., GPT4), you need API keys that you can specify on chatapi.py.
 
-python run-prompt.py --model llama3 --prompt CC-original --nb``scenarios 50000 --random_seed`` 123
+`python run-prompt.py --model llama3 --prompt CC-original --nb``scenarios 50000 --random_seed`` 123`
 
 ## Sharing/Access information
 
