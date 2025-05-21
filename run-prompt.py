@@ -9,7 +9,7 @@ from chatmodel import ChatModel
 import argparse
 
 from huggingface_hub import login
-login(token = "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")
+login(token = "")
 
 
 #### Parameters #############
