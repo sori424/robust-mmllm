@@ -6,7 +6,7 @@ This repository has three experiments.
 
 2. Prompt variations for evaluating the robustness of the LLMs in dilemma situations `run-prompt.py` . 
 
-3. Prompt variations for evaluating the robustness of the LLMs in non-dilemma situations run-prompt-const.py`.
+3. Prompt variations for evaluating the robustness of the LLMs in non-dilemma situations `run-prompt-const.py`.
 
 
 
