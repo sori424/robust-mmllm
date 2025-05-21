@@ -4,9 +4,9 @@ This repository has three experiments.
 
 1. Revised the data generation code in a balanced way.
 
-2. Prompt variations for evaluating the robustness of the LLMs in dilemma situations.
+2. Prompt variations for evaluating the robustness of the LLMs in dilemma situations `run-prompt.py` . 
 
-3. Prompt variations for evaluating the robustness of the LLMs in non-dilemma situations.
+3. Prompt variations for evaluating the robustness of the LLMs in non-dilemma situations run-prompt-const.py`.
 
 
 
