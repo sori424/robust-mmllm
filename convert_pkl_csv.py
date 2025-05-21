@@ -6,6 +6,7 @@ import argparse
 #### Parameters #############
 parser = argparse.ArgumentParser(description='Run ChatGPT')
 parser.add_argument('--model', default='gpt-3.5-turbo-0613', type=str)
+parser.add_argument('--prompt', type=str)
 parser.add_argument('--random_seed', default='123', type=int)
 parser.add_argument('--nb', default='500', type=int)
 parser.add_argument('--country', default='United States', type=str)
@@ -14,35 +15,42 @@ parser.add_argument('--only_random', action='store_true', help='only random scen
 parser.add_argument('--random_1vs1', action='store_true', help='random 1vs1 scenarios')
 args = parser.parse_args()
 
-df = pd.read_pickle("results_CC-question-v6_{}_scenarios_seed{}_{}.pickle".format(args.nb, args.random_seed, args.model))
+prompt_typ = args.prompt
+df = pd.read_pickle("results_{}_{}_scenarios_seed{}_{}.pickle".format(args.prompt, args.nb, args.random_seed, args.model))
 
 keywords = ["case 1", "case 2"]
 
 def response_classification(query):
   
   text = query[1].lower()
-  pattern_case1 = re.compile(r"case\s?1")
-  pattern_case2 = re.compile(r"case\s?2")
-    
-  #pattern_case1 = re.compile(r"\(a\)")
-  #pattern_case2 = re.compile(r"\(b\)")
 
+  if 'AB' in prompt_typ:
+    pattern_case1 = re.compile(r"\(a\)")
+    pattern_case2 = re.compile(r"\(b\)")
+  else:
+    pattern_case1 = re.compile(r"case\s?1")
+    pattern_case2 = re.compile(r"case\s?2")
 
   match_case1 = pattern_case1.search(text) is not None
   match_case2 = pattern_case2.search(text) is not None
-
-  if match_case1 and not match_case2:
-      label = 0
-  elif not match_case1 and match_case2:
-      label = 1
+  
+  if 'reverse' or 'content' in prompt_typ:
+    if match_case1 and not match_case2:
+        label = 1
+    elif not match_case1 and match_case2:
+        label = 0
+    else:
+        label = -1
   else:
-      label = -1
+    if match_case1 and not match_case2:
+        label = 0
+    elif not match_case1 and match_case2:
+        label = 1
+    else:
+        label = -1
 
   return label
 
-temp = df.sample(30)
-for i in range(len(temp)):
-    print(temp.iloc[i]['chat_response'])
 # assign the response labels
 if 'chat_response' in df.columns:
   df['label'] = df['chat_response'].apply(response_classification)
@@ -208,5 +216,5 @@ new_index_order = ["ResponseID", "ExtendedSessionID","UserID", "ScenarioOrder", 
 
 df = pd.DataFrame(sharedresponse_list)
 df = df[new_index_order]
-df.to_csv("shared_CC-reverse_responses_{}_{}.csv".format(args.nb, args.model), index=False)
+df.to_csv("shared_{}_responses_{}_{}.csv".format(args.prompt, args.nb, args.model), index=False)
 print(df)
